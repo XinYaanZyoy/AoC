@@ -1,17 +1,17 @@
-import requests
+import requests as req
 import sys
 
 
 # ___LIB___
 
-def downin(day):
+def downin(day,cookie):
     headers = {'session': cookie}
     url = f"https://adventofcode.com/2021/day/{day}/input"
-    session = requests.Session()
-    resp = session.get(url,cookies=headers)
-    in_file = open(f'day{day:02}.txt','w')
-    in_file.write(resp.text)
-    in_file.close()
+    session = req.Session()
+    res = session.get(url,cookies=headers)
+    with open(f"./data/day{day}.in",'w') as f:
+        f.write(res.text)
+        f.close()
 
 
 def getin(day,flag):
@@ -21,12 +21,12 @@ def getin(day,flag):
     '''
     data = ""
     if flag == 1:
-        with open("./data/day"+str(day)+".in", 'r') as f:
+        with open(f"./data/day{day}.in", 'r') as f:
             data = f.read()
             f.close()
         return data
     if flag == 0:
-        with open("./data/day"+str(day)+".tst", 'r') as f:
+        with open(f"./data/day{day}.tst", 'r') as f:
             data = f.read()
             f.close()
         return data
@@ -35,17 +35,24 @@ def getin(day,flag):
 def getin1(day,flag):
     data = getin(day,flag)
     data = data.split('\n')
-    # converting strings to ints
+    data = [data[i] for i in range(len(data)) if data[i] != ""]
     data = [int(data[i]) for i in range(len(data))]
     return data
 
 
 # ___DAYS___
 
+def day3_1(day,flag):
+    print("computing day 3 challange 1")
+    data = getin(day,flag)
 
-def day2_2():
+
+def day2_2(day,flag):
     print("computing day 2 challange 2")
-    data = getin1(day,flag)
+    data = getin(day,flag)
+    data = data.split('\n')
+    data = [data[i] for i in range(len(data)) if data[i] != ""]
+    data = [data[i].split() for i in range(len(data))]
     # print(data)
     count_h=0
     count_d=0
@@ -61,9 +68,12 @@ def day2_2():
     print(count_h, count_d, count_h*count_d)
 
 
-def day2_1():
+def day2_1(day,flag):
     print("computing day 2 challange 1")
-    data = getin1(day,flag)
+    data = getin(day,flag)
+    data = data.split('\n')
+    data = [data[i] for i in range(len(data)) if data[i] != ""]
+    data = [data[i].split() for i in range(len(data))]
     # print(data)
     count_h=0
     count_d=0
@@ -82,7 +92,7 @@ def day1_2(day,flag):
     data = getin1(day,flag)
     # print(data)
     wl = 3 #window len
-    windows = [data[i]+data[i+1]+data[i+2] for i in range(1+len(str)-k)]
+    windows = [data[i]+data[i+1]+data[i+2] for i in range(1+len(data)-wl)]
     # print(windows)
     count = 0
     for i in range(1, len(windows)):
@@ -107,8 +117,8 @@ def day1_1(day,flag):
 
 if __name__ == "__main__":
     if len(sys.argv) != 5:
-        print("NEED 5 ARGS!!! [file, cookie, day, challenge, flag(0=tst, 1=in)]")
+        print("NEED 5 ARGS!!! [file, cookie, flag(0=tst, 1=in)], day, challenge")
         exit(0)
-    cookie, day, challange, flag = sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])
-    # downin(day)
+    cookie, flag, day, challange = sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])
+    downin(day,cookie)
     eval("day"+str(day)+"_"+str(challange)+"(day,flag)")
